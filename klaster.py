@@ -1,4 +1,3 @@
-# 🔧 STREAMLIT DASHBOARD FINAL (MODIFIED)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -8,11 +7,9 @@ from sklearn.metrics import silhouette_score
 import pydeck as pdk
 
 
-# 🚀 Setup halaman
 st.set_page_config(page_title="Dashboard Pendidikan & Kemiskinan", layout="wide")
 st.title("📊 Dashboard Data Pendidikan dan Kemiskinan")
 
-# 📂 Load data
 @st.cache_data
 def load_data():
     df = pd.read_excel("alldata.xlsx")
@@ -34,7 +31,6 @@ fitur_klaster = [
     'k_2', 'k_3', 'k_7', 'k_12', 'k_13', 'Sudah Verifikasi'
 ]
 
-# --- 🧭 Sidebar Filters ---
 st.sidebar.markdown("## 📍 Filter Daerah")
 provinsi_list = sorted(data['Provinsi'].unique())
 provinsi_list_with_all = ["-- Pilih Semua --"] + provinsi_list
@@ -55,11 +51,9 @@ filtered_data = data[
     (data['Kabupaten/Kota'].isin(selected_kota))
 ].copy()
 
-# 👉 Pilih Algoritma
 st.subheader("🔍 Pilih Algoritma Clustering")
 selected_algo = st.selectbox("Pilih salah satu algoritma:", ["KMeans", "Agglomerative Clustering", "DBSCAN"])
 
-# 👉 Clustering Process
 if st.button("🔄 Proses Ulang Clustering"):
     data_cluster = data[fitur_klaster].dropna()
     scaler = StandardScaler()
@@ -82,7 +76,6 @@ if st.button("🔄 Proses Ulang Clustering"):
     else:
         st.warning("⚠️ Silhouette Score tidak bisa dihitung.")
 
-# --- 🧩 Tampilkan Cluster Result Berdasarkan Filter
 if 'Cluster' in data.columns and not data['Cluster'].isna().all():
     filtered_data = data[
         (data['Provinsi'].isin(selected_provinsi)) &
@@ -96,7 +89,6 @@ if 'Cluster' in data.columns and not data['Cluster'].isna().all():
         use_container_width=True
     )
 
-    # Optional: Download button
     csv = filtered_data[['Provinsi', 'Kabupaten/Kota', 'Cluster']].to_csv(index=False).encode('utf-8')
     st.download_button(
         "⬇️ Download Hasil Clustering (CSV)",
@@ -105,7 +97,6 @@ if 'Cluster' in data.columns and not data['Cluster'].isna().all():
         mime='text/csv'
     )
 
-# --- 📋 Tampilkan Data Terfilter ---
 if not filtered_data.empty:
     st.subheader("📋 Data Terfilter")
     st.dataframe(filtered_data, use_container_width=True)
@@ -196,7 +187,6 @@ if not filtered_data.empty:
         Semakin tinggi skor, semakin besar urgensi intervensi pada daerah tersebut.
         """)
 
-# 📦 KESIMPULAN PER ALGORITMA
 st.subheader("📌 Kesimpulan Clustering")
 
 with st.expander("📦 Kesimpulan: KMeans Clustering"):
