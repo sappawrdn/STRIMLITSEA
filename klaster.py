@@ -160,10 +160,10 @@ if not filtered_data.empty:
         filtered_data[['Jumlah Penduduk Miskin', 'Sudah Verifikasi']]
     )
     filtered_data['Skor Prioritas'] = (
-        0.5 * filtered_data['Norm_Miskin'] +
-        0.5 * filtered_data['Norm_Verifikasi']
+        0.7 * filtered_data['Norm_Miskin'] +
+        0.3 * filtered_data['Norm_Verifikasi']
     )
-    top5 = filtered_data.sort_values(by='Skor Prioritas', ascending=False).head(5)
+    top5 = filtered_data.sort_values(by='Skor Prioritas', ascending=False)
     st.dataframe(
         top5[['Provinsi', 'Kabupaten/Kota', 'Jumlah Penduduk Miskin', 'Sudah Verifikasi', 'Skor Prioritas']].style.format({
             'Jumlah Penduduk Miskin': '{:,.0f}',
