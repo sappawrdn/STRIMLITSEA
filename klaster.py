@@ -12,7 +12,7 @@ st.title("📊 Dashboard Data Pendidikan dan Kemiskinan")
 
 @st.cache_data
 def load_data():
-    df = pd.read_excel("alldata.xlsx")
+    df = pd.read_excel("alldatanew.xlsx")
     df.columns = df.columns.str.strip()
     df['Jumlah Penduduk'] = df['Jumlah Penduduk'].round(0).astype(int)
     df['Jumlah Penduduk Miskin'] = df['Jumlah Penduduk Miskin'].round(0).astype(int)
@@ -69,12 +69,6 @@ if st.button("🔄 Proses Ulang Clustering"):
     labels = model.fit_predict(data_scaled)
     data['Cluster'] = -1
     data.loc[data_cluster.index, 'Cluster'] = labels
-
-    if len(set(labels)) > 1 and -1 not in set(labels):
-        score = silhouette_score(data_scaled, labels)
-        st.success(f"✅ Silhouette Score: **{score:.4f}**")
-    else:
-        st.warning("⚠️ Silhouette Score tidak bisa dihitung.")
 
 if 'Cluster' in data.columns and not data['Cluster'].isna().all():
     filtered_data = data[
@@ -179,13 +173,11 @@ if not filtered_data.empty:
         use_container_width=True
     )
 
-    with st.expander("ℹ️ Cara Menentukan Prioritas"):
+    with st.expander("ℹ️ Bagaimana Skor Prioritas Dihitung?"):
         st.markdown("""
-        Skor dihitung dari kombinasi dua indikator utama:
-        - **Jumlah Penduduk Miskin** (50% bobot)
-        - **Jumlah Kendala Pendidikan yang Diverifikasi** (50% bobot)
-        Semakin tinggi skor, semakin besar urgensi intervensi pada daerah tersebut.
+        Skor prioritas dihitung dari hasil normalisasi *Jumlah Penduduk Miskin* dan *Sudah Verifikasi*, lalu dijumlahkan dengan bobot seimbang. Skor ini merepresentasikan daerah dengan tingkat kemiskinan dan hambatan pendidikan tertinggi. Lima skor tertinggi dipilih sebagai daerah prioritas.
         """)
+
 
 st.subheader("📌 Kesimpulan Clustering")
 
@@ -193,21 +185,21 @@ with st.expander("📦 Kesimpulan: KMeans Clustering"):
     if selected_algo == "KMeans":
         st.markdown("""
         - **Cluster 0** → Daerah dengan jumlah miskin & kendala pendidikan paling rendah.
-        - **Cluster 1** → Jumlah miskin tinggi dan kendala sedang.
-        - **Cluster 2** → Daerah paling terdampak: kemiskinan & hambatan pendidikan sangat tinggi.
+        - **Cluster 1** → Daerah dengan Jumlah miskin & kendala pendidikan paling tinggi.
+        - **Cluster 2** → Daerah dengan Jumlah miskin & kendala pendidikan menengah.
         """)
 
 with st.expander("🌳 Kesimpulan: Agglomerative Clustering"):
     if selected_algo == "Agglomerative Clustering":
         st.markdown("""
-        - **Cluster 0** → Kondisi aman: miskin & hambatan rendah.
-        - **Cluster 1** → Miskin besar, kendala sedang.
-        - **Cluster 2** → Banyak anak bekerja, disabilitas, dan masalah akses.
+        - **Cluster 0** → Daerah dengan Jumlah miskin & kendala pendidikan paling tinggi.
+        - **Cluster 1** → Daerah dengan jumlah miskin & kendala pendidikan paling rendah.
+        - **Cluster 2** → Daerah dengan Jumlah miskin & kendala pendidikan menengah.
         """)
 
 with st.expander("🧩 Catatan: DBSCAN Clustering"):
     if selected_algo == "DBSCAN":
         st.markdown("""
-        - DBSCAN mendeteksi outlier.
-        - Banyak `Cluster -1`? Sesuaikan parameter `eps` & `min_samples`.
+        - DBSCAN mendeteksi banyak outlier.
+        - Banyak `Cluster bernilai -1 dan hanya terbentuk 1 cluster saja`.
         """)
