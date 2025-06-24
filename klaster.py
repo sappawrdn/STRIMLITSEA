@@ -154,7 +154,7 @@ if not filtered_data.empty:
         cluster_stats = filtered_data[['Cluster'] + fitur_klaster].groupby('Cluster').mean().reset_index()
         st.dataframe(cluster_stats.style.format("{:.2f}"), use_container_width=True)
 
-    st.subheader("🚨 5 Daerah dengan Prioritas Tertinggi")
+    st.subheader("🚨 Daerah dengan Prioritas Tertinggi")
     scaler_priority = MinMaxScaler()
     filtered_data[['Norm_Miskin', 'Norm_Verifikasi']] = scaler_priority.fit_transform(
         filtered_data[['Jumlah Penduduk Miskin', 'Sudah Verifikasi']]
