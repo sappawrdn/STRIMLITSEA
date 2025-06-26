@@ -70,6 +70,34 @@ if st.button("🔄 Proses Ulang Clustering"):
     data['Cluster'] = -1
     data.loc[data_cluster.index, 'Cluster'] = labels
 
+    print("\n📦 Hasil Klasterisasi Terminal:")
+    unique_labels = sorted(set(labels))
+    for cluster_id in unique_labels:
+        cluster_rows = data[data['Cluster'] == cluster_id]
+        kota_list = cluster_rows['Kabupaten/Kota'].tolist()
+        kota_joined = ', '.join(kota_list)
+        label_desc = f"Cluster {cluster_id}" if cluster_id != -1 else "Noise"
+        print(f"\n🌀 {label_desc} - Jumlah Daerah: {len(kota_list)}")
+        print(kota_joined)
+
+    # Tambahan khusus DBSCAN: info noise & evaluasi
+    jumlah_klaster_valid = len([x for x in unique_labels if x != -1])
+    jumlah_data_noise = (labels == -1).sum()
+    jumlah_total_data = len(labels)
+    persentase_noise = jumlah_data_noise / jumlah_total_data * 100
+
+    if len(unique_labels) > 1 and not (selected_algo == "DBSCAN" and jumlah_klaster_valid <= 1):
+        sil_score = silhouette_score(data_scaled, labels)
+        st.success(f"✅ Silhouette Score: **{sil_score:.4f}**")
+        print(f"📈 Silhouette Score ({selected_algo}): {sil_score:.4f}")
+    else:
+        st.warning("⚠️ Clustering menghasilkan hanya satu cluster atau banyak data noise.")
+        print(f"⚠️ Silhouette Score ({selected_algo}): N/A")
+        print(f"Jumlah klaster valid (tanpa noise): {jumlah_klaster_valid}")
+        print(f"Jumlah data termasuk noise (-1): {jumlah_data_noise}")
+        print(f"Jumlah total data: {jumlah_total_data}")
+        print(f"Persentase noise: {persentase_noise:.2f}%")
+
 if 'Cluster' in data.columns and not data['Cluster'].isna().all():
     filtered_data = data[
         (data['Provinsi'].isin(selected_provinsi)) &
