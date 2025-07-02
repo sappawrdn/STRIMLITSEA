@@ -88,7 +88,6 @@ if st.button("🔄 Proses Ulang Clustering"):
 
     if len(unique_labels) > 1 and not (selected_algo == "DBSCAN" and jumlah_klaster_valid <= 1):
         sil_score = silhouette_score(data_scaled, labels)
-        st.success(f"✅ Silhouette Score: **{sil_score:.4f}**")
         print(f"📈 Silhouette Score ({selected_algo}): {sil_score:.4f}")
     else:
         st.warning("⚠️ Clustering menghasilkan hanya satu cluster atau banyak data noise.")
